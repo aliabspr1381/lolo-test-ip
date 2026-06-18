@@ -8,20 +8,19 @@ import time
 import atexit
 import signal
 
-# پورت‌های استاندارد برای تست
+# Test Ports
 PORTS = [443, 53, 123, 500, 4500, 3074, 55424]
 
-# متغیرهای سراسری برای حفظ وضعیت فایروال
 fw_originally_active = False
 active_test_ports = []
 
 def is_port_in_use(port):
-    """بررسی اینکه آیا پورت توسط برنامه دیگری در سرور اشغال شده است یا خیر"""
-    # تست در بستر TCP
+    """Checks if a port is occupied by another process"""
+    # TCP Check
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         if s.connect_ex(('127.0.0.1', port)) == 0:
             return True
-    # تست در بستر UDP
+    # UDP Check
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         try:
             s.bind(('0.0.0.0', port))
@@ -30,7 +29,7 @@ def is_port_in_use(port):
             return True
 
 def get_ufw_status():
-    """بررسی روشن یا خاموش بودن فایروال سرور"""
+    """Checks UFW firewall state"""
     try:
         output = subprocess.check_output(["sudo", "ufw", "status"], stderr=subprocess.STDOUT).decode()
         if "Status: active" in output:
@@ -40,7 +39,7 @@ def get_ufw_status():
     return False
 
 def manage_firewall_rules(ports, action='allow'):
-    """اعمال یا حذف قوانین فایروال"""
+    """Applies or removes firewall rules"""
     for port in ports:
         try:
             subprocess.run(["sudo", "ufw", action, str(port)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -48,23 +47,23 @@ def manage_firewall_rules(ports, action='allow'):
             pass
 
 def cleanup_and_rollback():
-    """تابع حیاتی بازگردانی سرور به حالت اول (تحت هر شرایطی اجرا می‌شود)"""
+    """Rollbacks firewall changes on exit"""
     global fw_originally_active, active_test_ports
     if fw_originally_active and active_test_ports:
-        print("\n🔄 [سیستم ایمنی] در حال پاکسازی قوانین تست و بازگردانی فایروال به حالت اولیه...")
+        print("\n🔄 [SAFETY SYSTEM] Cleaning test rules and restoring firewall...")
         manage_firewall_rules(active_test_ports, 'delete')
         subprocess.run(["sudo", "ufw", "reload"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        print("🔒 فایروال سرور با موفقیت به وضعیت امن قبلی بازگشت.")
+        print("🔒 Firewall restored to original secured state.")
     else:
-        print("\n✨ پاکسازی انجام شد. هیچ تغییری در ساختار فایروال سرور اعمال باقی نماند.")
+        print("\n✨ Cleanup finished. No firewall changes left on the server.")
 
-# ثبت تابع پاکسازی در هسته پایتون برای زمان بسته شدن ناگهانی نرم‌افزار یا اتصال
+# Register cleanup function
 atexit.register(cleanup_and_rollback)
 
 def handle_signal(signum, frame):
     sys.exit(0)
 
-# مدیریت سیگنال‌های قطع ارتباط ترمینال (SIGHUP) و قطع توسط کاربر (SIGINT/SIGTERM)
+# Catch terminal disconnect (SIGHUP) and user interrupts (SIGINT/SIGTERM)
 signal.signal(signal.SIGINT, handle_signal)
 signal.signal(signal.SIGTERM, handle_signal)
 if sys.platform != "win32":
@@ -120,14 +119,14 @@ def main():
     global fw_originally_active, active_test_ports
     
     if os.getuid() != 0:
-        print("❌ خطا: این اسکریپت برای مدیریت فایروال باید با دسترسی root (sudo) اجرا شود.")
+        print("❌ Error: This script must be run with root privileges (sudo).")
         sys.exit(1)
         
     print("====================================================")
-    print("🛰️ اسکریپت هوشمند سنجش شبکه و پورت (نسخه سرور ۲۰۲۶)")
+    print("🛰️ SMART NETWORK AUDITOR ENGINE (SERVER SIDE - v2026)")
     print("====================================================")
     
-    # تفکیک پورت‌های پر و خالی
+    # Filter busy ports
     skipped_ports = []
     for p in PORTS:
         if is_port_in_use(p):
@@ -136,27 +135,27 @@ def main():
             active_test_ports.append(p)
             
     if skipped_ports:
-        print(f"⚠️ پورت‌های روبرو توسط برنامه‌های فعال سرور اشغال شده‌اند و تغییر نمیکنند: {skipped_ports}")
-    print(f"✅ پورت‌های آزاد و آماده برای تست فایروال: {active_test_ports}")
+        print(f"⚠️ Ports skipped (actively used by other apps): {skipped_ports}")
+    print(f"✅ Idle ports ready for testing: {active_test_ports}")
     
-    # مدیریت وضعیت فایروال
+    # Firewall logic
     fw_originally_active = get_ufw_status()
     if fw_originally_active:
-        print("🔒 فایروال UFW فعال است. باز کردن موقت پورت‌های تست...")
+        print("🔒 UFW Firewall is ACTIVE. Opening test ports temporarily...")
         manage_firewall_rules(active_test_ports, 'allow')
         subprocess.run(["sudo", "ufw", "reload"], stdout=subprocess.DEVNULL)
-        print("🔓 پورت‌های تست موقتاً در فایروال مجاز شدند.")
+        print("🔓 Test ports temporarily allowed through UFW.")
     else:
-        print("🔓 فایروال سرور خاموش است. نیازی به تغییر قوانین فایروال نیست.")
+        print("🔓 UFW Firewall is INACTIVE. Skipping firewall rules modification.")
         
-    # راه‌اندازی لیسنرها
+    # Start threads
     stop_event = threading.Event()
     for port in active_test_ports:
         threading.Thread(target=start_tcp_listener, args=(port, stop_event), daemon=True).start()
         threading.Thread(target=start_udp_listener, args=(port, stop_event), daemon=True).start()
         
-    print("\n[READY] سرور آماده پاسخگویی به ابزار ویندوز است.")
-    print("نکته ایمنی: در صورت قطع ناگهانی SSH یا زدن Ctrl+C، فایروال خودکار به حالت اول برمی‌گردد.")
+    print("\n[READY] Server is listening for Windows Client requests.")
+    print("Safety Notice: Firewall auto-rolls back on Ctrl+C or SSH disconnection.")
     
     try:
         while True:

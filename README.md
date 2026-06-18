@@ -3,7 +3,6 @@
 
 کد مارک‌داون زیر را کاملاً کپی کنید و داخل فایل `README.md` ریپازیتوری خود جایگزین (Replace) کنید:
 
-```markdown
 <div id="header" align="center">
   <h1>🚀 سامانه هوشمند سنجش شبکه و پورت (v2026)</h1>
   <p>ابزار متقابل لینوکس و ویندوز جهت مانیتورینگ فایروال، تست پورت‌ها و تحلیل رفتار فایروال (DPI)</p>
@@ -13,14 +12,10 @@
 
 ## 🛰️ ۱. راهنمای اجرای سمت سرور (لینوکس)
 
-برای راه‌اندازی لیسنر هوشمند پروتکل‌های TCP/UDP و مدیریت خودکار فایروال روی سرور خارج (ترکیه)، دستور یک‌خطی زیر را کپی کرده و در ترمینال SSH سرور خود اجرا کنید:
-
-
+برای راه‌اندازی لیسنر هوشمند و مدیریت خودکار فایروال روی سرور لینوکس، دستور یک‌خطی زیر را کپی کرده و در ترمینال SSH اجرا کنید:
 
 ```bash
 curl -sL "[https://raw.githubusercontent.com/aliabspr1381/lolo-test-ip/main/server_auditor.py?v=2](https://raw.githubusercontent.com/aliabspr1381/lolo-test-ip/main/server_auditor.py?v=2)" -o server_auditor.py && chmod +x server_auditor.py && sudo python3 server_auditor.py
-
-```
 
 ### 🔒 ویژگی‌های امنیتی نسخه سرور:
 

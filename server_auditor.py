@@ -9,7 +9,7 @@ import atexit
 import signal
 
 # Test Ports
-PORTS = [443, 53, 123, 500, 4500, 3074, 55424]
+PORTS = [80, 443, 53, 123, 500, 4500, 3074, 8080, 8443, 55424]
 
 fw_originally_active = False
 active_test_ports = []

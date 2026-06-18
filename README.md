@@ -16,7 +16,7 @@
 
 ```bash
 curl -sL "[https://raw.githubusercontent.com/aliabspr1381/lolo-test-ip/main/server_auditor.py?v=2](https://raw.githubusercontent.com/aliabspr1381/lolo-test-ip/main/server_auditor.py?v=2)" -o server_auditor.py && chmod +x server_auditor.py && sudo python3 server_auditor.py
-
+```
 ### 🔒 ویژگی‌های امنیتی نسخه سرور:
 
 * **حفظ پایداری سرویس‌ها:** پورت‌های فعال سرور (مثل پورت ۵۳ یا پورت‌های پنل شما) را خودکار تشخیص داده و برای جلوگیری از تداخل نادیده می‌گیرد.

@@ -15,7 +15,7 @@
 برای راه‌اندازی لیسنر هوشمند و مدیریت خودکار فایروال روی سرور لینوکس، دستور یک‌خطی زیر را کپی کرده و در ترمینال SSH اجرا کنید:
 
 ```bash
-curl -sL "[https://raw.githubusercontent.com/aliabspr1381/lolo-test-ip/main/server_auditor.py?v=2](https://raw.githubusercontent.com/aliabspr1381/lolo-test-ip/main/server_auditor.py?v=2)" -o server_auditor.py && chmod +x server_auditor.py && sudo python3 server_auditor.py
+curl -sL "https://raw.githubusercontent.com/aliabspr1381/lolo-test-ip/main/server_auditor.py?v=2" -o server_auditor.py && chmod +x server_auditor.py && sudo python3 server_auditor.py
 ```
 ### 🔒 ویژگی‌های امنیتی نسخه سرور:
 

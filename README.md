@@ -15,6 +15,8 @@
 
 برای راه‌اندازی لیسنر هوشمند پروتکل‌های TCP/UDP و مدیریت خودکار فایروال روی سرور خارج (ترکیه)، دستور یک‌خطی زیر را کپی کرده و در ترمینال SSH سرور خود اجرا کنید:
 
+
+
 ```bash
 curl -sL "[https://raw.githubusercontent.com/aliabspr1381/lolo-test-ip/main/server_auditor.py?v=2](https://raw.githubusercontent.com/aliabspr1381/lolo-test-ip/main/server_auditor.py?v=2)" -o server_auditor.py && chmod +x server_auditor.py && sudo python3 server_auditor.py
 
